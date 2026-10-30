@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="narrow-page"><p class="eyebrow">A few details</p><h1>Set up your workspace</h1><p class="lead">Choose your role and the topics you want to focus on. You can change these later.</p>
+<form class="panel form-stack" data-api="/api/onboarding" data-redirect="/dashboard">
+  <label>Your name<input name="display_name" required maxlength="160" value="{{ user.display_name }}" autocomplete="name"></label>
+  <label>Your role<select name="role"><option value="student" {% if user.role == 'student' %}selected{% endif %}>Student</option><option value="lab_professional" {% if user.role == 'lab_professional' %}selected{% endif %}>Laboratory professional</option><option value="educator" {% if user.role == 'educator' %}selected{% endif %}>Educator</option></select></label>
+  <fieldset><legend>Topics of interest</legend><div class="check-grid">{% for topic in ['Molecular biology','Clinical chemistry','Microbiology','Immunology','Genetics','Hematology'] %}<label class="check-label"><input type="checkbox" name="interests" value="{{ topic }}" {% if topic in user.interests %}checked{% endif %}>{{ topic }}</label>{% endfor %}</div></fieldset>
+  <button class="button primary" type="submit">Save and continue</button><p class="form-message" aria-live="polite"></p>
+</form></section>
+{% endblock %}

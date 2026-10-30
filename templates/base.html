@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7fb">
+  <title>{{ title or 'BioWorkspace' }} · BioWorkspace</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script defer src="/static/app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="BioWorkspace home"><span class="brand-mark">B</span>BioWorkspace</a>
+    {% if user %}
+    <nav aria-label="Main navigation">
+      <a href="/dashboard">Home</a><a href="/lessons">Curriculum</a><a href="/notes">Notes</a><a href="/cases">Lab workspace</a><a href="/practice">Practice</a><a href="/institutions">Institutions</a>
+    </nav>
+    <div class="account"><span>{{ user.display_name or user.email }}</span>{% if user.role == 'editor' %}<a href="/editor">Review</a>{% endif %}<form action="/auth/logout" method="post"><button class="link-button" type="submit">Sign out</button></form></div>
+    {% else %}<nav aria-label="Main navigation"><a href="/">Home</a></nav><div class="account"><a class="button secondary" href="/auth/login">Log in</a><a class="button primary" href="/signup">Sign up</a></div>{% endif %}
+  </header>
+  <main id="main" class="page">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="footer"><span>For learning and laboratory organization. AI output requires qualified human verification.</span></footer>
+</body>
+</html>

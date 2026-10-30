@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Medical biotechnology learning library</p><h1>Curriculum and courses</h1><p class="lead">Browse the two study tracks and explore course packs. Draft materials stay unavailable to students until an editor reviews and publishes them.</p></div></section>
+{% for item in track_data %}
+<section class="section-block curriculum-track">
+  <div class="section-heading"><div><p class="eyebrow">Study track</p><h2>{{ item.track.title }}</h2><p class="subtle">{{ item.track.description }}</p></div></div>
+  {% for year, courses in item.years|dictsort %}
+  <div class="curriculum-year"><h3>Year {{ year }}</h3><div class="card-grid">
+    {% for link in courses %}<article class="panel course-card">
+      <p class="eyebrow">{{ link.course.code }} · {{ link.course.credits }} credits</p>
+      <h3><a href="/courses/{{ link.course.code }}">{{ link.course.title }}</a></h3>
+      <p class="subtle">{{ link.semester or 'Year 2' }} · {{ link.category }}</p>
+      {% if link.course.pack and link.course.pack.status == 'published' %}<span class="status-pill published">Study pack available</span>
+      {% else %}<span class="status-pill">Pack in editorial review</span>{% endif %}
+    </article>{% endfor %}
+  </div></div>
+  {% endfor %}
+  {% if item.requirements %}<details class="requirements"><summary>Other curriculum requirements</summary><ul>{% for requirement in item.requirements %}<li><strong>Year {{ requirement.study_year }}:</strong> {{ requirement.title }}{% if requirement.credits %} · {{ requirement.credits }} credits{% endif %}</li>{% endfor %}</ul></details>{% endif %}
+</section>
+{% endfor %}
+{% if lessons %}<section class="section-block"><h2>Additional reviewed lessons</h2><div class="lesson-list">{% for lesson in lessons %}<article class="panel"><h3>{{ lesson.title }}</h3><div class="lesson-body">{{ lesson.body }}</div></article>{% endfor %}</div></section>{% endif %}
+{% if user.role in ['educator','editor'] %}<section class="panel section-block"><h2>Submit lesson material</h2><p class="subtle">An internal editor reviews submissions before publication.</p><form class="form-stack" data-api="/api/content/submissions"><label>Title<input name="title" required maxlength="240"></label><label>Lesson material<textarea name="body" rows="8" required maxlength="100000"></textarea></label><input type="hidden" name="kind" value="lesson"><button class="button primary">Submit for review</button><p class="form-message" aria-live="polite"></p></form></section>{% endif %}
+{% endblock %}

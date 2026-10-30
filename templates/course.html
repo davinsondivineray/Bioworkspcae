@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/lessons">← Back to curriculum</a></p>
+<section class="page-heading"><div><p class="eyebrow">{{ course.code }} · {{ course.credits }} credits</p><h1>{{ course.title }}</h1><p class="lead">{% for link in links %}{{ link.track.title }} · Year {{ link.study_year }}{% if link.semester %} · {{ link.semester }}{% endif %}{% if not loop.last %}<br>{% endif %}{% endfor %}</p></div></section>
+{% if pack_available and pack and pack.status == 'draft' %}<div class="notice" role="status">This course pack is a private editorial draft. Students cannot see it until an editor publishes it.</div>{% endif %}
+{% if pack_available %}
+  {% if user.role == 'editor' %}<details class="panel editorial-notes"><summary>Private editorial research notes</summary><p>{{ pack.research_notes }}</p></details>{% endif %}
+  <section class="section-block"><h2>Lessons</h2><div class="lesson-list">
+  {% for lesson in lessons %}<article class="panel course-lesson"><p class="eyebrow">Lesson {{ lesson.position }}{% if lesson.id in completed %} · Completed{% endif %}</p><h3>{{ lesson.title }}</h3><h4>Learning objectives</h4><ul>{% for objective in lesson.objectives %}<li>{{ objective }}</li>{% endfor %}</ul><div class="lesson-body">{{ lesson.body }}</div><h4>Key terms</h4><p class="subtle">{{ lesson.key_terms|join(', ') }}</p>
+    {% if pack.status == 'published' %}<form data-api="/api/courses/{{ course.code }}/lessons/{{ lesson.id }}/complete" data-method="POST" data-refresh="true"><button class="button secondary" {% if lesson.id in completed %}disabled{% endif %}>{% if lesson.id in completed %}Completed{% else %}Mark lesson complete{% endif %}</button><p class="form-message" aria-live="polite"></p></form>{% endif %}
+  </article>{% endfor %}</div></section>
+  {% if questions %}<section class="section-block"><h2>Course review questions</h2><div class="question-grid">{% for question in questions %}<article class="panel"><form data-attempt="/api/practice/questions/{{ question.id }}/attempt"><fieldset><legend>{{ question.prompt }}</legend>{% for option in question.options %}<label class="check-label"><input type="radio" name="answer_index" value="{{ loop.index0 }}"> {{ option }}</label>{% endfor %}</fieldset><button class="button secondary" type="submit">Check answer</button><p class="answer-feedback" aria-live="polite"></p></form></article>{% endfor %}</div></section>{% endif %}
+{% else %}<section class="panel empty-state"><h2>Course pack in editorial review</h2><p>The course is in the curriculum. Its study materials will appear here after the editorial team completes review.</p></section>{% endif %}
+{% endblock %}

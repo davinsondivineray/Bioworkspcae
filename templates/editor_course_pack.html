@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<p><a href="/editor">← Back to content review</a></p>
+<section class="page-heading"><div><p class="eyebrow">{{ pack.course.code }} · editorial review</p><h1>{{ pack.course.title }}</h1><p class="lead">Edit the original draft, verify scientific accuracy and confirm the answer key before publishing.</p></div></section>
+<details class="panel editorial-notes"><summary>Private editor research notes</summary><p>{{ pack.research_notes }}</p></details>
+<section class="section-block"><h2>Lessons ({{ pack.lessons|length }})</h2><div class="lesson-list">
+{% for lesson in pack.lessons %}<article class="panel"><p class="eyebrow">Lesson {{ lesson.position }}</p><form class="form-stack" data-api="/api/editor/course-lessons/{{ lesson.id }}" data-method="PUT" data-refresh="true">
+  <label>Lesson title<input name="title" value="{{ lesson.title }}" required maxlength="240"></label>
+  <label>Learning objectives (one per line)<textarea name="objectives_text" rows="4">{{ lesson.objectives|join('\n') }}</textarea></label>
+  <label>Lesson material<textarea name="body" rows="10" required maxlength="100000">{{ lesson.body }}</textarea></label>
+  <label>Key terms (comma separated)<input name="key_terms_text" value="{{ lesson.key_terms|join(', ') }}"></label>
+  <button class="button secondary" type="submit">Save lesson changes</button><p class="form-message" aria-live="polite"></p>
+</form></article>{% endfor %}</div></section>
+<section class="section-block"><h2>Review questions ({{ pack.questions|length }})</h2><div class="lesson-list">
+{% for q in pack.questions %}<article class="panel"><p class="eyebrow">Draft question {{ loop.index }}</p><form class="form-stack" data-api="/api/editor/course-questions/{{ q.id }}" data-method="PUT" data-refresh="true">
+  <label>Question<textarea name="prompt" rows="3" required>{{ q.prompt }}</textarea></label>
+  <label>Options (one per line)<textarea name="options_text" rows="4" required>{{ q.options|join('\n') }}</textarea></label>
+  <label>Correct option number<input type="number" name="answer_index" min="1" max="8" value="{{ q.answer_index + 1 }}" required></label>
+  <label>Explanation<textarea name="explanation" rows="3">{{ q.explanation }}</textarea></label>
+  <label>Topic<input name="topic" value="{{ q.topic }}" maxlength="160"></label>
+  <button class="button secondary" type="submit">Save question changes</button><p class="form-message" aria-live="polite"></p>
+</form></article>{% endfor %}</div></section>
+<section class="panel section-block"><h2>Publish reviewed pack</h2><p>Publishing makes all lessons and questions available to students. Confirm every lesson and answer key is accurate.</p><form data-api="/api/editor/course-packs/{{ pack.id }}/publish" data-refresh="true"><button class="button primary">Approve and publish complete pack</button><p class="form-message" aria-live="polite"></p></form></section>
+{% endblock %}

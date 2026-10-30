@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading">
+  <div><p class="eyebrow">Personal workspace</p><h1>Welcome, {{ user.display_name or user.email.split('@')[0] }}</h1><p class="lead">Pick up where you left off, or choose what you want to work on today.</p></div>
+  <span class="role-pill">{{ user.role.replace('_', ' ') }}</span>
+</section>
+<div class="stats-grid">
+  <a class="stat-card" href="/notes"><span class="stat-label">Study notes</span><strong>{{ stats.notes }}</strong><span>Open your materials →</span></a>
+  <a class="stat-card" href="/cases"><span class="stat-label">Lab cases</span><strong>{{ stats.cases }}</strong><span>Review your workspace →</span></a>
+  <a class="stat-card" href="/practice"><span class="stat-label">Practice questions</span><strong>{{ stats.questions }}</strong><span>Test your understanding →</span></a>
+</div>
+<p class="subtle">You have completed {{ stats.attempts }} practice attempt(s). <a href="/api/practice/progress">View your progress data</a>.</p>
+<section class="section-block"><div class="section-title"><div><p class="eyebrow">Choose a path</p><h2>What would you like to do?</h2></div></div>
+  <div class="card-grid">
+    <a class="action-card" href="/notes"><span class="card-symbol">✎</span><h3>Study and organize</h3><p>Create notes, add learning resources, and select material for AI study support.</p></a>
+    <a class="action-card" href="/practice"><span class="card-symbol">✓</span><h3>Practice and review</h3><p>Answer reviewed questions and see explanations to guide your next study session.</p></a>
+    <a class="action-card" href="/cases"><span class="card-symbol">⌕</span><h3>Log a lab case</h3><p>Record structured results and organize technical notes in a private workspace.</p></a>
+    <a class="action-card" href="/lessons"><span class="card-symbol">▤</span><h3>Browse lessons</h3><p>Explore reviewed learning material and curriculum resources.</p></a>
+  </div>
+</section>
+<section class="notice"><strong>Privacy controls</strong><p>Patient workspaces are pseudonymous by default. Identifiable records are disabled until a privacy and security review is completed.</p><a href="/api/account/export">Export your account data</a></section>
+{% endblock %}

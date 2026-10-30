@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="signup-layout">
+  <div class="signup-copy">
+    <p class="eyebrow">Welcome back</p>
+    <h1>Pick up where you left off</h1>
+    <p class="lead">Return to your BioWorkspace notes, course progress, practice, and laboratory learning workspace.</p>
+    <ul class="signup-benefits">
+      <li>Continue learning across your course materials</li>
+      <li>Revisit saved notes and study files</li>
+      <li>Keep your laboratory workspace private</li>
+    </ul>
+  </div>
+  <div class="panel signup-panel">
+    <h2>Log in to BioWorkspace</h2>
+    {% if error %}<p class="form-message" role="alert">{{ error }}</p>{% endif %}
+    <form class="form-stack" action="/auth/login" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label for="login-email">Email address
+        <input id="login-email" name="email" type="email" autocomplete="username" maxlength="254" required>
+      </label>
+      <label for="login-password">Password
+        <input id="login-password" name="password" type="password" autocomplete="current-password" maxlength="256" required>
+      </label>
+      <button class="button primary signup-submit" type="submit">Log in</button>
+    </form>
+    <hr>
+    <p class="signup-login">New to BioWorkspace? <a href="/signup">Create an account</a></p>
+  </div>
+</section>
+{% endblock %}

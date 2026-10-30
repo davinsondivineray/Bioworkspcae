@@ -1,0 +1,8 @@
+-r requirements.txt
+pytest>=8,<9
+pytest-cov>=5,<7
+ruff>=0.7,<1
+playwright>=1.48,<2
+httpx2>=2,<3
+aws-cdk-lib>=2.160,<3
+constructs>=10,<11

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-heading"><div><p class="eyebrow">Private by default</p><h1>Lab workspace</h1><p class="lead">Organize cases and test results for your own workflow. This does not replace your laboratory’s official system.</p></div><span class="role-pill">{{ workspace.identity_mode }}</span></section>
+<div class="notice"><strong>Identifiable records are currently disabled</strong><p>Use pseudonymous case codes. Named patient information cannot be saved until the privacy/security review gate is enabled.</p></div>
+<section class="panel section-block">
+  <h2>Create a case</h2>
+  <form class="form-grid" data-api="/api/cases" data-refresh="true">
+    <label>Case code<input name="case_code" required maxlength="100" placeholder="e.g. CASE-2026-001"></label>
+    <label class="span-two">Case notes<textarea name="summary" rows="3" maxlength="20000"></textarea></label>
+    <button class="button primary">Create private case</button><p class="form-message span-two" aria-live="polite"></p>
+  </form>
+</section>
+<section class="section-block"><div class="section-title"><h2>Your cases</h2></div><div class="case-list">
+{% for case in cases %}
+<article class="panel case-card">
+  <div class="case-header"><div><span class="eyebrow">{{ case.case_code }}</span><h3>{{ case.summary or 'Laboratory case' }}</h3></div><span class="role-pill">{{ case.results|length }} result(s) · {{ case_permissions[case.id] }}</span></div>
+  <div class="table-wrap"><table><thead><tr><th>Test</th><th>Result</th><th>Unit</th><th>Reference</th><th>Status</th></tr></thead><tbody>{% for result in case.results %}<tr><td>{{ result.test_name }}</td><td>{{ result.value }}</td><td>{{ result.unit }}</td><td>{{ result.reference_range }}</td><td>{{ result.status }}</td></tr>{% else %}<tr><td colspan="5">No results recorded.</td></tr>{% endfor %}</tbody></table></div>
+  {% if case_permissions[case.id] in ['owner','edit','manage'] %}
+  <details><summary>Add test result or import report</summary><div class="two-column inner-details">
+    <form class="form-stack" data-api="/api/cases/{{ case.id }}/results" data-refresh="true">
+      <h4>Enter a result</h4><label>Test<input name="test_name" list="common-tests" required></label><label>Value<input name="value" required></label><label>Unit<input name="unit"></label><label>Reference range<input name="reference_range" placeholder="Use your laboratory's range"></label><label>Status<input name="status" placeholder="e.g. review flag"></label><label>Observed at<input type="datetime-local" name="observed_at"></label><label>Technical notes<textarea name="notes" rows="2"></textarea></label><button class="button secondary">Save result</button><p class="form-message" aria-live="polite"></p>
+    </form>
+    <form class="form-stack" data-api="/api/cases/import" data-upload data-import-case="{{ case.id }}" data-extra="case_id:{{ case.id }}">
+      <h4>Import results</h4><label>CSV/XLSX or PDF/image report<input type="file" name="file" accept=".csv,.xlsx,.pdf,.png,.jpg,.jpeg,.webp" required></label><input type="hidden" name="case_id" value="{{ case.id }}"><button class="button secondary">Extract for review</button><p class="form-message" aria-live="polite"></p><div class="import-preview" hidden></div><p class="subtle">Review and confirm extracted values before they are saved.</p>
+    </form>
+  </div></details>
+  {% endif %}
+  {% if case_permissions[case.id] in ['owner','manage'] %}
+  <details><summary>Share with a teammate</summary><form class="form-grid" data-api="/api/cases/{{ case.id }}/share"><label>Account email<input name="email" type="email" required></label><label>Permission<select name="role"><option value="view">View</option><option value="edit">Edit</option><option value="manage">Manage sharing</option></select></label><button class="button secondary">Share case</button><p class="form-message span-two" aria-live="polite"></p></form></details>
+  {% endif %}
+  {% if user.role == 'lab_professional' %}
+  <details class="lab-ai"><summary>Ask for technical troubleshooting</summary><p class="subtle">The assistant can discuss methods, QC flags, and technical causes. It does not diagnose or approve results.</p><form class="form-stack" data-api="/api/ai/conversations" data-ai-lab="{{ case.id }}"><button class="button secondary">Start lab support chat</button><p class="form-message" aria-live="polite"></p></form><div class="chat-box" hidden><div class="chat-messages" aria-live="polite"></div><form class="lab-chat-form form-stack"><label>Your technical question<textarea name="content" required maxlength="12000"></textarea></label><button class="button primary">Ask assistant</button><p class="form-message" aria-live="polite"></p></form></div></details>
+  {% endif %}
+</article>
+{% else %}<div class="empty-state">No cases yet. Create a pseudonymous case above.</div>{% endfor %}
+</div><datalist id="common-tests">{% for entry in test_catalog_entries %}<option value="{{ entry.test_name }}" data-unit="{{ entry.default_unit }}"></option>{% endfor %}</datalist></section>
+{% endblock %}

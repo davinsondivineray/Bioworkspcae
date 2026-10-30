@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="signup-layout">
+  <div class="signup-copy">
+    <p class="eyebrow">Join BioWorkspace</p>
+    <h1>Create your learning and laboratory workspace</h1>
+    <p class="lead">Keep your biotechnology study materials, practice, and laboratory learning organized in one private workspace.</p>
+    <ul class="signup-benefits">
+      <li>Build a personal study library with notes and files</li>
+      <li>Learn with course materials and review questions</li>
+      <li>Organize pseudonymous laboratory cases and results</li>
+    </ul>
+  </div>
+  <div class="panel signup-panel">
+    <h2>Create an account</h2>
+    {% if error %}<p class="form-message" role="alert">{{ error }}</p>{% endif %}
+    <form class="form-stack" action="/auth/signup" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label for="full-name">Full name
+        <input id="full-name" name="full_name" autocomplete="name" maxlength="160" required>
+      </label>
+      <label for="signup-email">Email address
+        <input id="signup-email" name="email" type="email" autocomplete="email" maxlength="254" required>
+      </label>
+      <label for="signup-password">Password
+        <input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="256" required aria-describedby="password-help">
+      </label>
+      <label for="confirm-password">Confirm password
+        <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="256" required>
+      </label>
+      <p id="password-help" class="subtle">At least 12 characters, including uppercase and lowercase letters, a number, and a symbol.</p>
+      <button class="button primary signup-submit" type="submit">Create account</button>
+    </form>
+    <p class="subtle">You’ll be signed in after creating your account. Choose your role and interests in the next step.</p>
+    <hr>
+    <p class="signup-login">Already have an account? <a href="/auth/login">Log in</a></p>
+  </div>
+</section>
+{% endblock %}
